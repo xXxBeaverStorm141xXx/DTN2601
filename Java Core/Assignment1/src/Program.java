@@ -77,7 +77,7 @@ public class Program {
 
 
         System.out.println("Thông tin các Account trên hệ thống:");
-        
+
         System.out.println("Account 1: ID : " + account1.id + ", Email: " + account1.email + ", UserName: " + account1.userName
                 + ", FullName: " + account1.fullName + ", Department: " + account1.department.name + ", Position: "
                 + account1.position.name + ", Group: "+ account1.groups[0].name +" "+ account1.groups[1].name  + ", CreateDate: " + account1.createDate);
