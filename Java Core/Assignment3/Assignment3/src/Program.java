@@ -18,9 +18,19 @@ public class Program {
         dep3.id = 3;
         dep3.name = "BOD";
 
+        Department dep4 = new Department();
+        dep4.id = 4;
+        dep4.name = "Java";
+
+        Department dep5 = new Department();
+        dep5.id = 5;
+        dep5.name = "QA/QC";
+
         departments[0] = dep1;
         departments[1] = dep2;
         departments[2] = dep3;
+        departments[3] = dep4;
+        departments[4] = dep5;
         // Create Position
         Position pos1 = new Position();
         pos1.id = 1;
@@ -203,7 +213,8 @@ public class Program {
 //        Exercise4.Question16();
         // Exercise5
 //        Exercise5.Question1(dep1);
-
+//        Exercise5.Question2(departments);
+        Exercise5.Question3(dep1);
 
     }
 }
