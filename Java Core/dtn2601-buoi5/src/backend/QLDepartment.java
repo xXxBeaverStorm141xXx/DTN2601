@@ -23,8 +23,8 @@ public class QLDepartment {
         ) {
             while (resultSet.next()) {
                 Department department = new Department();
-                department.setId(resultSet.getInt("id"));
-                department.setName(resultSet.getString("name"));
+                department.setId(resultSet.getInt("DepartmentID"));
+                department.setName(resultSet.getString("DepartmentName"));
 
                 departments.add(department);
             }

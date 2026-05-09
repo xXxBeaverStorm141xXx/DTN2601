@@ -22,12 +22,12 @@ public class QLAccount {
         ) {
             while (resultSet.next()) {
                 Account account = new Account();
-                account.setId(resultSet.getInt("id"));
-                account.setEmail(resultSet.getString("email"));
-                account.setUserName(resultSet.getString("userName"));
-                account.setFullName(resultSet.getString("fullName"));
-                account.setDepartment(resultSet.getInt("department"));
-                account.setPosition(resultSet.getInt("position"));
+                account.setId(resultSet.getInt("AccountID"));
+                account.setEmail(resultSet.getString("Email"));
+                account.setUserName(resultSet.getString("Username"));
+                account.setFullName(resultSet.getString("FullName"));
+                account.setDepartment(resultSet.getInt("DepartmentID"));
+                account.setPosition(resultSet.getInt("PositionID"));
                 account.setCreateDate(resultSet.getDate("CreateDate"));
 
                 accounts.add(account);

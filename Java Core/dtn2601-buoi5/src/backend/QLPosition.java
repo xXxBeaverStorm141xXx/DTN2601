@@ -22,8 +22,8 @@ public class QLPosition {
         ) {
             while (resultSet.next()) {
                 Position position = new Position();
-                position.setId(resultSet.getInt("id"));
-                position.setName(PositionEnum.valueOf(resultSet.getString("name")));
+                position.setId(resultSet.getInt("PositionID"));
+                position.setName(PositionEnum.valueOf(resultSet.getString("PositionName")));
 
                 positions.add(position);
             }
