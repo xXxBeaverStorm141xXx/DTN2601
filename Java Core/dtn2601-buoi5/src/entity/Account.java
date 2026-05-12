@@ -8,8 +8,8 @@ public class Account {
     private String email;
     private String userName;
     private String fullName;
-    private int department;
-    private int position;
+    private Department department;
+    private Position position;
     private Date createDate;
 
 
@@ -20,7 +20,7 @@ public class Account {
         this.userName = userName;
     }
 
-    public Account(int id, String email, String userName, String fullName, int department, int position, Date createDate) {
+    public Account(int id, String email, String userName, String fullName, Department department, Position position, Date createDate) {
         this.id = id;
         this.email = email;
         this.userName = userName;
@@ -62,19 +62,19 @@ public class Account {
         this.fullName = fullName;
     }
 
-    public int getDepartment() {
+    public Department getDepartment() {
         return department;
     }
 
-    public void setDepartment(int department) {
+    public void setDepartment(Department department) {
         this.department = department;
     }
 
-    public int getPosition() {
+    public Position getPosition() {
         return position;
     }
 
-    public void setPosition(int position) {
+    public void setPosition(Position position) {
         this.position = position;
     }
 
