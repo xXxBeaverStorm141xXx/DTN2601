@@ -1,14 +1,18 @@
-package backend;
+package org.example.backend.repository.impl;
 
-import entity.Position;
-import Enum.PositionEnum;
+import org.example.Enums.PositionEnum;
+import org.example.backend.repository.IPositionRepository;
+import org.example.entity.Position;
+import org.example.utils.DBConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class QLPosition {
-    public static List<Position> getPosition() {
+public class PositionRepositoryimpl implements IPositionRepository {
+
+    @Override
+    public List<Position> findAllPosition() {
         List<Position> positions = new ArrayList<>();
 
         String query = "SELECT * FROM position";
@@ -25,20 +29,15 @@ public class QLPosition {
 
                 positions.add(position);
             }
-
+            DBConnection.closeConnection(connection, statement, resultSet);
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return positions;
     }
 
-    public static void printPosition(List<Position> positions) {
-        for (Position position : positions) {
-            System.out.println(position);
-        }
-    }
-    public static List<Position> findByPositionIdAndName(int searchId, String searchName)
-    {
+    @Override
+    public List<Position> findByPositionIdAndName(int searchId, String searchName) {
         List<Position> positions = new ArrayList<>();
         try {
             Connection connection = DBConnection.getConnection();
@@ -55,7 +54,7 @@ public class QLPosition {
                 Position position = new Position(id, PositionEnum.valueOf(name));
                 positions.add(position);
             }
-
+        DBConnection.closeConnection(connection, preparedStatement, resultSet);
 
         } catch (Exception e) {// show các lỗi lien quan đén logic xử lý
             e.printStackTrace();// show ra exception
@@ -63,18 +62,16 @@ public class QLPosition {
         return positions;
     }
 
-    public static boolean insertPositionName(String newName) {
+    @Override
+    public boolean insertPositionName(String newName) {
         try {
             Connection connection = DBConnection.getConnection();
             String query = "insert into Position (PositionName) values (?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, newName);
             int add = preparedStatement.executeUpdate();
-            if (add > 0) {
-                return true;
-            } else {
-                return false;
-            }
+            DBConnection.closeConnection(connection, preparedStatement, null);
+            return add > 0;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -82,47 +79,43 @@ public class QLPosition {
         return false;
     }
 
-    public static boolean deletePosition(String deleteName) {
+    @Override
+    public boolean deletePosition(int idName) {
         try {
             Connection connection = DBConnection.getConnection();
-            String query = "delete from Position where PositionName like ?;";
+            String query = "delete from Position where PositionID = ?;";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, deleteName);
+            preparedStatement.setInt(1, idName);
 
             int c = preparedStatement.executeUpdate();
-            if (c > 0) {
-                return true;
-            }  else {
-                return false;
-            }
+            DBConnection.closeConnection(connection, preparedStatement, null);
+            return c > 0;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
 
-
-    public static boolean updatePosition(int id, String updateName) {
+    @Override
+    public boolean updatePosition(int id, String updateName) {
         try {
             Connection connection = DBConnection.getConnection();
             String query = "update Position set PositionName = ? where PositionID = ?;";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, updateName);
             preparedStatement.setInt(2, id);
-
             int c = preparedStatement.executeUpdate();
-            if (c > 0) {
-                return true;
-            }  else {
-                return false;
-            }
+            DBConnection.closeConnection(connection, preparedStatement, null);
+            return  c > 0;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
 
-    public static void getPositionHasMaxEmployee(){
+    @Override
+    public List<Position> getPositionHasMaxEmployee() {
+        List<Position> positions = new ArrayList<>();
         try {
             Connection connection = DBConnection.getConnection();
             String query = "SELECT p.PositionName, COUNT(a.AccountID) AS Employee_Count FROM `Position` p\n" +
@@ -141,19 +134,23 @@ public class QLPosition {
             ResultSet resultSet = statement.executeQuery(query);
 
             while (resultSet.next()) {
-                String name = resultSet.getString("PositionName");
-                int count = resultSet.getInt("Employee_Count");
+                Position position = new Position();
+                position.setName(PositionEnum.valueOf(resultSet.getString("PositionName")));
+                position.setCount(resultSet.getInt("Employee_Count"));
 
-                System.out.println("Position Name: " + name);
-                System.out.println("Position Count: " + count);
+                positions.add(position);
+
             }
-
+        DBConnection.closeConnection(connection, statement, resultSet);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return positions;
     }
 
-    public static void getPositionHasMinEmployee(){
+    @Override
+    public List<Position> getPositionHasMinEmployee() {
+        List<Position> positions = new ArrayList<>();
         try {
             Connection connection = DBConnection.getConnection();
             String query = "SELECT p.PositionName, COUNT(a.AccountID) AS Employee_Count FROM `Position` p\n" +
@@ -173,16 +170,15 @@ public class QLPosition {
             ResultSet resultSet = statement.executeQuery(query);
 
             while (resultSet.next()) {
-                String name = resultSet.getString("PositionName");
-                int count = resultSet.getInt("Employee_Count");
-
-                System.out.println("Position Name: " + name);
-                System.out.println("Position Count: " + count);
-
+                Position position = new Position();
+                position.setName(PositionEnum.valueOf(resultSet.getString("PositionName")));
+                position.setCount(resultSet.getInt("Employee_Count"));
+                positions.add(position);
             }
-
+        DBConnection.closeConnection(connection, statement, resultSet);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return positions;
     }
 }

@@ -1,14 +1,17 @@
-package backend;
+package org.example.backend.repository.impl;
 
-
-import entity.Department;
+import org.example.backend.repository.IDepartmentRepository;
+import org.example.entity.Department;
+import org.example.utils.DBConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class QLDepartment {
-    public static List<Department> getDepartment() {
+public class DepartmentRepositoryimpl implements IDepartmentRepository {
+    @Override
+    public List<Department> findAllDepartment()
+    {
         List<Department> departments = new ArrayList<>();
 
         String query = "SELECT * FROM department";
@@ -25,24 +28,16 @@ public class QLDepartment {
 
                 departments.add(department);
             }
-
+            // close cac ket noi
+            DBConnection.closeConnection(connection, statement, resultSet);
         } catch (SQLException e) {
-            throw new RuntimeException("Error when fetching accounts", e);
+            e.printStackTrace();
         }
         return departments;
     }
 
-    public static void printDepartment(List<Department> departments) {
-        for (Department department : departments) {
-            System.out.println(department);
-        }
-    }
-
-    // lấy ra ds các phòng ban theo departmentID và departmentName
-    // đưa vào departmentID = 1 và departmentName= Marketing, tìm các phòng ban có thông tin như trên
-    // "select * from department where department_id = 1 and department_name like 'Marketing';"
-    // "select * from department where department_id = 1 or department_name like 'Marketing';"
-    public static List<Department> findByDepartmentIdAndName(int searchId, String searchName)
+    @Override
+    public List<Department> findByDepartmentIdAndName(int searchId, String searchName)
     {
         List<Department> departments = new ArrayList<>(); // lưu lại dữ liệu lấy từ DB
         try {
@@ -65,17 +60,14 @@ public class QLDepartment {
                 departments.add(department);
             }
 
-
+            DBConnection.closeConnection(connection, preparedStatement, resultSet);
         } catch (Exception e) {// show các lỗi lien quan đén logic xử lý
             e.printStackTrace();// show ra exception
         }
         return departments;
     }
-    // với các bài toán thêm , sửa, xóa  thfi trả về boolean,
-    // với bài toán tìm kiếm, trả 1 ds
-    // thêm 1 department mới, người dùng sẽ nhập vào name, còn id tự động tăng
-    // insert, delete, update là câu modify, dùng executeUpdate();
-    public static boolean insertDepartmentName(String newName) {
+    @Override
+    public boolean insertDepartmentName(String newName) {
         try {
             // b1: kết nối đến DB
             Connection connection = DBConnection.getConnection();
@@ -83,59 +75,31 @@ public class QLDepartment {
             String query = "insert into Department (DepartmentName) values (?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             // set dia chi cho dau ?
-            preparedStatement.setString(1, "Phong ban: " + newName);
+            preparedStatement.setString(1, newName);
             // thực thi câu lệnh sql và gán bảng trả ra vào ResultSet rs
             int add = preparedStatement.executeUpdate();
-            if (add > 0) {
-                return true;
-            } else {
-                return false;
-            }
-
+            DBConnection.closeConnection(connection, preparedStatement, null);
+            return add > 0;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
-    // procedure
-    // CallableStatement dùng để call procedure
-    public static boolean insertDepartmentProcedure(String newName) {
-        try {
-            // b1: kết nối đến DB
-            Connection connection = DBConnection.getConnection();
-            // b2: tiến hành thêm mới department bằng  Procedure insert_department()
-            String query = "{CALL insert_department(?)}";
-            CallableStatement callableStatement = connection.prepareCall(query);
-            callableStatement.setString(1, newName);
 
-            int c = callableStatement.executeUpdate();// executeUpdate sẽ trả về 1 số nguyên, đại diện cho số dòng bị thay đổi trong DB
-            if (c > 0) {
-                return true;
-            }  else {
-                return false;
-            }
-        } catch (Exception e) {// show các lỗi lien quan đén logic xử lý
-            e.printStackTrace();// show ra exception
-        }
-        return false;
-    }
-
-    // xóa phong ban theo tên
-    public static boolean deleteDerpartment(String deleteName) {
+    @Override
+    public boolean deleteDerpartment(int id) {
         try {
             // b1: kết nối đến DB
             Connection connection = DBConnection.getConnection();
             // b2: tiến hành xóa department
-            String query = "delete from department where DepartmentName like ?;";
+            String query = "delete from department where DepartmentID =?;";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, deleteName);
+            preparedStatement.setInt(1, id);
 
             int c = preparedStatement.executeUpdate();// executeUpdate sẽ trả về 1 số nguyên, đại diện cho số dòng bị thay đổi trong DB
-            if (c > 0) {
-                return true;
-            }  else {
-                return false;
-            }
+            DBConnection.closeConnection(connection, preparedStatement, null);
+            return c > 0;
+
         } catch (Exception e) {// show các lỗi lien quan đén logic xử lý
             e.printStackTrace();// show ra exception
         }
@@ -145,7 +109,8 @@ public class QLDepartment {
     // update phòng ban theo id
     // nhập vào id phòng ban cần sửa: 1
     // nhập ten phòng ban muốn sửa: MARKETING_UPDATE
-    public static boolean updateDepartment(int id, String updateName) {
+    @Override
+    public boolean updateDepartment(int id, String updateName) {
         try {
             // b1: kết nối đến DB
             Connection connection = DBConnection.getConnection();
@@ -156,23 +121,17 @@ public class QLDepartment {
             preparedStatement.setInt(2, id);
 
             int c = preparedStatement.executeUpdate();// executeUpdate sẽ trả về 1 số nguyên, đại diện cho số dòng bị thay đổi trong DB
-            if (c > 0) {
-                return true;
-            }  else {
-                return false;
-            }
+            DBConnection.closeConnection(connection, preparedStatement, null);
+            return c > 0;
         } catch (Exception e) {// show các lỗi lien quan đén logic xử lý
             e.printStackTrace();// show ra exception
         }
         return false;
     }
 
-    // CRUD department      (CREATE     READ        UPDATE      DELETE)  department
-
-    //Tìm và in phòng ban có nhiều nhân viên nhất
-    //Tìm và in phòng ban có ít nhân viên nhất
-
-    public static void getDepartmentHasMaxEmployee(){
+    @Override
+    public List<Department> getDepartmentHasMaxEmployee(){
+        List<Department> departments = new ArrayList<>();
         try {
             Connection connection = DBConnection.getConnection();
             String query = "SELECT d.DepartmentName, COUNT(a.AccountID) AS Employee_Count FROM Department d\n" +
@@ -191,49 +150,51 @@ public class QLDepartment {
             ResultSet resultSet = statement.executeQuery(query);
 
             while (resultSet.next()) {
-                String name = resultSet.getString("DepartmentName");
-                int count = resultSet.getInt("Employee_Count");
+                Department department = new Department();
+                department.setName(resultSet.getString("DepartmentName"));
+                department.setCount(resultSet.getInt("Employee_Count"));
 
-                System.out.println("Department Name: " + name);
-                System.out.println("Department Count: " + count);
+                departments.add(department);
             }
-
+        DBConnection.closeConnection(connection, statement, resultSet);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return departments;
     }
 
-    public static void getDepartmentHasMinEmployee(){
+    @Override
+    public List<Department> getDepartmentHasMinEmployee(){
+        List<Department> departments = new ArrayList<>();
+        String query = "SELECT d.DepartmentName, COUNT(a.AccountID) AS Employee_Count FROM Department d\n" +
+                "left JOIN `Account` a ON d.DepartmentID = a.DepartmentID\n" +
+                "GROUP BY d.DepartmentID\n" +
+                "HAVING COUNT(a.AccountID) = (\n" +
+                "\t\t\t\t\t\tSELECT MIN(Employee_Count) \n" +
+                "\t\t\t\t\t\tFROM (\n" +
+                "\t\t\t\t\t\t\tSELECT COUNT(a.AccountID) AS Employee_Count\n" +
+                "\t\t\t\t\t\t\tFROM `Account` a\n" +
+                "right join Department d ON a.DepartmentID = d.DepartmentID\n" +
+                "\t\t\t\t\t\t\tGROUP BY d.DepartmentID\n" +
+                "\t\t\t\t\t\t) AS temp\n" +
+                ");";
         try {
             Connection connection = DBConnection.getConnection();
-            String query = "SELECT d.DepartmentName, COUNT(a.AccountID) AS Employee_Count FROM Department d\n" +
-                    "left JOIN `Account` a ON d.DepartmentID = a.DepartmentID\n" +
-                    "GROUP BY d.DepartmentID\n" +
-                    "HAVING COUNT(a.AccountID) = (\n" +
-                    "\t\t\t\t\t\tSELECT MIN(Employee_Count) \n" +
-                    "\t\t\t\t\t\tFROM (\n" +
-                    "\t\t\t\t\t\t\tSELECT COUNT(a.AccountID) AS Employee_Count\n" +
-                    "\t\t\t\t\t\t\tFROM `Account` a\n" +
-                    "                            right join Department d ON a.DepartmentID = d.DepartmentID\n" +
-                    "\t\t\t\t\t\t\tGROUP BY d.DepartmentID\n" +
-                    "\t\t\t\t\t\t) AS temp\n" +
-                    ");";
-
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(query);
 
             while (resultSet.next()) {
-                String name = resultSet.getString("DepartmentName");
-                int count = resultSet.getInt("Employee_Count");
-
-                System.out.println("Department Name: " + name);
-                System.out.println("Department Count: " + count);
+                Department department = new Department();
+                department.setName(resultSet.getString("DepartmentName"));
+                department.setCount(resultSet.getInt("Employee_Count"));
+                departments.add(department);
 
             }
-
+        DBConnection.closeConnection(connection, statement, resultSet);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return departments;
     }
 
 }
