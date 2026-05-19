@@ -45,4 +45,9 @@ public class PositionServiceimpl implements IPositionService {
     public List<Position> getPositionHasMinEmployee() {
         return positionRepository.getPositionHasMinEmployee();
     }
+
+    @Override
+    public boolean checkExistName(String name, Integer id) {
+        return positionRepository.checkExistName(name, id);
+    }
 }

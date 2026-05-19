@@ -5,6 +5,7 @@ import org.example.entity.Department;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class DepartmentFunction {
@@ -94,8 +95,24 @@ public class DepartmentFunction {
 
 
     public void insertDepartment() {
-        System.out.println("Nhập tên phòng ban: ");
-        String name = sc.nextLine();
+        String name;
+        while (true) {
+            boolean check = true;
+            System.out.println("Nhập tên phòng ban: ");
+            name = sc.nextLine();
+            // kiem tra tinh dung dan cua ten phong ban
+            if (Objects.isNull(name) || name.trim().isEmpty()) {//name.isEmpty() check xem đọ dài = 0
+                System.out.println("Ko đc để trống. Nhập lại tên");
+                check = false;
+            }
+            if (departmentController.checkExistName(name, null)) {// kiem tra xem ten da ton tai chua
+                System.out.println("Tên này đã tồn tại. Nhập lại tên khác");
+                check = false;
+            }
+            if (check) {
+                break;
+            }
+        }
         boolean check = departmentController.insertDepartment(name);
         if (check) {
             System.out.println("Thêm mới thành công");

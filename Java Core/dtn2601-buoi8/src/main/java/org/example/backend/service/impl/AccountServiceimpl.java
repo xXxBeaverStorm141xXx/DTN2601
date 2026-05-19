@@ -34,4 +34,14 @@ public class AccountServiceimpl implements IAccountService {
     public boolean updateAccount(int id, String updateEmail, String updateFullName, String updateUserName, int updateDepartmentId, int updatePositionId) {
         return accountRepository.updateAccount(id, updateEmail, updateFullName, updateUserName, updateDepartmentId, updatePositionId);
     }
+
+    @Override
+    public boolean checkExistUserName(String userName, Integer id) {
+        return accountRepository.checkExistUserName(userName, id);
+    }
+
+    @Override
+    public boolean checkExistEmail(String email, Integer id) {
+        return accountRepository.checkExistEmail(email, id);
+    }
 }

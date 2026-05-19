@@ -16,4 +16,7 @@ public interface IAccountService {
 
     boolean updateAccount(int id, String updateEmail, String updateFullName, String updateUserName, int updateDepartmentId, int updatePositionId);
 
+    boolean checkExistUserName(String userName, Integer id);
+
+    boolean checkExistEmail(String email, Integer id);
 }

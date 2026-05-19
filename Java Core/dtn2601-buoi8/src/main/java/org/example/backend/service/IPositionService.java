@@ -19,4 +19,6 @@ public interface IPositionService {
     List<Position> getPositionHasMaxEmployee();
 
     List<Position> getPositionHasMinEmployee();
+
+    boolean checkExistName(String name, Integer id);
 }

@@ -10,6 +10,7 @@ import org.example.utils.DBConnection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class AccountRepositoryimpl implements IAccountRepository {
 
@@ -166,4 +167,60 @@ public class AccountRepositoryimpl implements IAccountRepository {
         }
         return false;
     }
+
+    @Override
+    public boolean checkExistUserName(String userName, Integer id) {
+        boolean check = false;
+        try {
+            // b1: kết nối đến DB
+            Connection connection = DBConnection.getConnection();
+            // b2: lấy dữ liệu từ bảng account
+            String sql = "select * from `Account` where Email like ? ";
+            if (Objects.nonNull(id)) { //id != null
+                sql += " and AccountID != ? ";
+            }
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, userName);
+            if (Objects.nonNull(id)) { //id != null
+                preparedStatement.setInt(2, id);
+            }
+            ResultSet rs = preparedStatement.executeQuery();// thực thi câu lệnh sql và gán bảng trả ra vào ResultSet rs
+            if (rs.next()) {// lặp qua qua từng dòng của rs
+                check = true;
+            }
+            // đóng các kết nối
+            DBConnection.closeConnection(connection, preparedStatement, rs);
+        } catch (Exception e) {// show các lỗi lien quan đén logic xử lý
+            e.printStackTrace();// show ra exception
+        }
+        return check;
+    }
+    @Override
+    public boolean checkExistEmail(String email, Integer id) {
+        boolean check = false;
+        try {
+            // b1: kết nối đến DB
+            Connection connection = DBConnection.getConnection();
+            // b2: lấy dữ liệu từ bảng account
+            String sql = "select * from `Account` where Username like ? ";
+            if (Objects.nonNull(id)) { //id != null
+                sql += " and AccountID != ? ";
+            }
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, email);
+            if (Objects.nonNull(id)) { //id != null
+                preparedStatement.setInt(2, id);
+            }
+            ResultSet rs = preparedStatement.executeQuery();// thực thi câu lệnh sql và gán bảng trả ra vào ResultSet rs
+            if (rs.next()) {// lặp qua qua từng dòng của rs
+                check = true;
+            }
+            // đóng các kết nối
+            DBConnection.closeConnection(connection, preparedStatement, rs);
+        } catch (Exception e) {// show các lỗi lien quan đén logic xử lý
+            e.printStackTrace();// show ra exception
+        }
+        return check;
+    }
+
 }

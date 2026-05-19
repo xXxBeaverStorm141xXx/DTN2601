@@ -38,4 +38,8 @@ public class DepartmentController {
     {
         return departmentService.getDepartmentHasMinEmployee();
     }
+
+    public boolean checkExistName(String name, Integer id) {
+        return departmentService.checkExistName(name, id);
+    }
 }

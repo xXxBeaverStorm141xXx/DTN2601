@@ -7,6 +7,7 @@ import org.example.utils.DBConnection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class DepartmentRepositoryimpl implements IDepartmentRepository {
     @Override
@@ -197,4 +198,28 @@ public class DepartmentRepositoryimpl implements IDepartmentRepository {
         return departments;
     }
 
+    @Override
+    public boolean checkExistName(String name, Integer id) {
+        boolean check = false;
+        try {
+            Connection connection = DBConnection.getConnection();
+            String sql = "select * from Department where DepartmentName like ? ";
+            if (Objects.nonNull(id)) {
+                sql += " and DepartmentID != ? ";
+            }
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, name);
+            if (Objects.nonNull(id)) {
+                preparedStatement.setInt(2, id);
+            }
+            ResultSet rs = preparedStatement.executeQuery();
+            if (rs.next()) {
+                check = true;
+            }
+            DBConnection.closeConnection(connection, preparedStatement, rs);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return check;
+    }
 }

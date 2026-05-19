@@ -67,10 +67,47 @@ public class AccountFunction {
 
 
     public void insertAccount() {
-        System.out.println("Nhập user name: ");
-        String userName = sc.nextLine();
-        System.out.println("Nhập email: ");
-        String email = sc.nextLine();
+        String email;
+        while (true) {
+            boolean check = true;
+            String regex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+            System.out.println("Nhập email: ");
+            email = sc.nextLine();
+            // kiem tra tinh dung dan cua email
+            if (Objects.isNull(email)
+                    || email.trim().isEmpty()
+                    || !email.matches(regex)) {
+
+                System.out.println("Email không hợp lệ");
+                check = false;
+            }
+            if (accountController.checkExistEmail(email, null)) {// kiem tra email da ton tai chua
+                System.out.println("Email này đã tồn tại. Nhập lại email khác");
+                check = false;
+            }
+            if (check) {
+                break;
+            }
+        }
+        String userName;
+        while (true) {
+            boolean check = true;
+            System.out.println("Nhập username: ");
+            userName = sc.nextLine();
+            // kiem tra tinh dung dan cua user name
+            if (Objects.isNull(userName) || email.trim().isEmpty()) {
+                System.out.println("User Name không hợp lệ");
+                check = false;
+            }
+            if (accountController.checkExistUserName(userName, null)) {// kiem tra user name da ton tai chua
+                System.out.println("User Name này đã tồn tại. Nhập lại User Name khác");
+                check = false;
+            }
+            if (check) {
+                break;
+            }
+        }
+
         System.out.println("Nhập full name: ");
         String fullName = sc.nextLine();
         System.out.println("Nhập id phòng ban theo danh sách phòng ban có sẵn sau: ");
@@ -112,25 +149,63 @@ public class AccountFunction {
         System.out.println("Nhập tên ID account cần sửa: ");
         int id = sc.nextInt();
         sc.nextLine();
-        System.out.println("Nhập email bạn muốn thay đổi: ");
-        String email = sc.nextLine();
-        System.out.println("Nhập user name bạn muốn thay đổi: ");
-        String userName = sc.nextLine();
-        System.out.println("Nhập full name bạn muốn thay đổi: ");
+
+        String email;
+        while (true) {
+            boolean check = true;
+            String regex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+            System.out.println("Nhập email cần sửa: ");
+            email = sc.nextLine();
+            // kiem tra tinh dung dan cua email
+            if (Objects.isNull(email)
+                    || email.trim().isEmpty()
+                    || !email.matches(regex)) {
+
+                System.out.println("Email không hợp lệ");
+                check = false;
+            }
+            if (accountController.checkExistEmail(email, id)) {// kiem tra email da ton tai chua
+                System.out.println("Email này đã tồn tại. Nhập lại email khác");
+                check = false;
+            }
+            if (check) {
+                break;
+            }
+        }
+        String userName;
+        while (true) {
+            boolean check = true;
+            System.out.println("Nhập username cần sửa: ");
+            userName = sc.nextLine();
+            // kiem tra tinh dung dan cua user name
+            if (Objects.isNull(userName) || email.trim().isEmpty()) {
+                System.out.println("User Name không hợp lệ");
+                check = false;
+            }
+            if (accountController.checkExistUserName(userName, id)) {// kiem tra user name da ton tai chua
+                System.out.println("User Name này đã tồn tại. Nhập lại User Name khác");
+                check = false;
+            }
+            if (check) {
+                break;
+            }
+        }
+
+        System.out.println("Nhập fullName cần sửa: ");
         String fullName = sc.nextLine();
 
         System.out.println("Nhập id phòng ban bạn muốn thay đổi trong danh sách sau: ");
         for (Department d : departmentController.findAllDepartment()) {
             System.out.println(d.getId() + " - " + d.getName());
         }
-        System.out.print("Chọn Department ID: ");
+        System.out.print("Chọn Department ID cần sửa: ");
         int departmentId = Integer.parseInt(sc.nextLine());
 
         System.out.println("Nhập id chức vụ bạn muốn thay đổi trong danh sách sau: ");
         for (Position p : positionController.findAllPosition()) {
             System.out.println(p.getId() + " - " + p.getName());
         }
-        System.out.print("Chọn Position ID: ");
+        System.out.print("Chọn Position ID cần sửa: ");
         int positionId = Integer.parseInt(sc.nextLine());
 
 

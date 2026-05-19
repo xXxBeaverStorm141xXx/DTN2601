@@ -20,5 +20,6 @@ public interface IDepartmentRepository {
 
     List<Department> getDepartmentHasMinEmployee();
 
+    boolean checkExistName(String name, Integer id);
 
 }

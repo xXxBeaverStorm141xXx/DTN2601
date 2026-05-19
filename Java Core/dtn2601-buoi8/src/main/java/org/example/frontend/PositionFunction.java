@@ -5,6 +5,7 @@ import org.example.entity.Position;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class PositionFunction {
@@ -45,7 +46,7 @@ public class PositionFunction {
                     getPosition(positionController.getPositionHasMaxEmployee());
                     break;
                 case "7":
-                    getPosition(positionController.getPositionHasMaxEmployee());
+                    getPosition(positionController.getPositionHasMinEmployee());
                     break;
                 case "8":
                     return;
@@ -94,8 +95,24 @@ public class PositionFunction {
 
 
     public void insertPosition() {
-        System.out.println("Nhập tên phòng ban: ");
-        String name = sc.nextLine();
+        String name;
+        while (true) {
+            boolean check = true;
+            System.out.println("Nhập tên chức vụ: ");
+            name = sc.nextLine();
+            // kiem tra tinh dung dan cua ten phong ban
+            if (Objects.isNull(name) || name.trim().isEmpty()) {//name.isEmpty() check xem đọ dài = 0
+                System.out.println("Ko đc để trống. Nhập lại tên");
+                check = false;
+            }
+            if (positionController.checkExistName(name, null)) {// kiem tra xem ten da ton tai chua
+                System.out.println("Tên này đã tồn tại. Nhập lại tên khác");
+                check = false;
+            }
+            if (check) {
+                break;
+            }
+        }
         boolean check = positionController.insertPositionName(name);
         if (check) {
             System.out.println("Thêm mới thành công");
@@ -118,11 +135,27 @@ public class PositionFunction {
 
 
     public void updatePosition() {
-        System.out.println("Nhập tên ID phòng ban cần sửa: ");
+        System.out.println("Nhập tên ID chức vụ cần sửa: ");
         int id = sc.nextInt();
         sc.nextLine();
-        System.out.println("Nhập tên phòng ban muốn thay đổi: ");
-        String name = sc.nextLine();
+        String name;
+        while (true) {
+            boolean check = true;
+            System.out.println("Nhập tên chức vụ muốn thay đổi: ");
+            name = sc.nextLine();
+            // kiem tra tinh dung dan cua ten phong ban
+            if (Objects.isNull(name) || name.trim().isEmpty()) {//name.isEmpty() check xem đọ dài = 0
+                System.out.println("Ko đc để trống. Nhập lại tên");
+                check = false;
+            }
+            if (positionController.checkExistName(name, id)) {// kiem tra xem ten da ton tai chua
+                System.out.println("Tên này đã tồn tại. Nhập lại tên khác");
+                check = false;
+            }
+            if (check) {
+                break;
+            }
+        }
 
         boolean check = positionController.updatePosition(id, name);
         if (check) {

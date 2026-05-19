@@ -36,4 +36,7 @@ public class PositionController {
     public List<Position> getPositionHasMinEmployee() {
         return positionService.getPositionHasMinEmployee();
     }
+    public boolean checkExistName(String name, Integer id) {
+        return positionService.checkExistName(name, id);
+    }
 }

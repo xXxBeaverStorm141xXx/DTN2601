@@ -53,4 +53,8 @@ public class DepartmentServiceimpl implements IDepartmentService {
         return departmentRepository.getDepartmentHasMinEmployee();
     }
 
+    @Override
+    public boolean checkExistName(String name, Integer id) {
+        return departmentRepository.checkExistName(name, id);
+    }
 }
