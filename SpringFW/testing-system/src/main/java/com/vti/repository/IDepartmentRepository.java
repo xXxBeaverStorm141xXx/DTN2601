@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface IDepartmentRepository extends JpaRepository<Department, Integer> {
     Department findByName(String name);
+    boolean existsByName(String name);
     boolean existsByNameAndIdNot(String name, Integer id);
 }

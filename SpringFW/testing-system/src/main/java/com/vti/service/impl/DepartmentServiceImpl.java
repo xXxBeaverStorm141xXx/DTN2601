@@ -1,11 +1,14 @@
 package com.vti.service.impl;
 
+import com.vti.dto.DepartmentDTO;
 import com.vti.entity.Department;
 import com.vti.repository.IDepartmentRepository;
 import com.vti.service.IDepartmentService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -14,54 +17,70 @@ import java.util.Optional;
 public class DepartmentServiceImpl implements IDepartmentService {
     @Autowired // khoi tao doi tuong
     private IDepartmentRepository departmentRepository;
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
-    public List<Department> findAll() {
-        return departmentRepository.findAll();
+    public List<DepartmentDTO> findAll() {
+        List<Department> departments = departmentRepository.findAll();
+        List<DepartmentDTO> departmentDTOS = new ArrayList<>();
+        for (Department department : departments) {
+            departmentDTOS.add(new DepartmentDTO(department));
+        }
+        return departmentDTOS;
     }
 
     @Override
-    public Department findById(Integer i) {
-       Optional<Department> optional = departmentRepository.findById(i);
+    public DepartmentDTO findById(Integer id) {
+//       Optional<Department> optional = departmentRepository.findById(id);
 //        if(optional.isPresent()){ // co gtri
 //            Department department = optional.get();
 //            return department;
 //        } else { // khong co gtri
 //            return null;
 //        }
-
-        return  optional.orElse(null);
+        Department department = departmentRepository.findById(id).orElse(null);
+        if(Objects.isNull(department)){
+            throw new RuntimeException("Không tìm thấy Department");
+        }
+        return new DepartmentDTO(department);
     }
 
     @Override
-    public Department findByName(String name) {
+    public DepartmentDTO findByName(String name) {
         Department department = departmentRepository.findByName(name);
-        return department;
+        return new DepartmentDTO(department);
     }
 
     @Override
-    public Department create(Department department) {
-        Department newDepartment = departmentRepository.save(department);
-        return newDepartment;
+    public void create(DepartmentDTO departmentDTO) {
+        if(departmentRepository.existsByName(departmentDTO.getName()))
+        {
+            throw new RuntimeException("Department already exists");
+        }
+        Department newDepartment = modelMapper.map(departmentDTO, Department.class);
+        departmentRepository.save(newDepartment);
     }
 
     @Override
-    public Department update(Integer id, Department department) {
+    public void update(Integer id, DepartmentDTO departmentDTO) {
         // tim department theo id dua vao
         Department departmentUpdate = departmentRepository.findById(id).orElse(null);
         if(Objects.isNull(departmentUpdate)){
             throw new RuntimeException("ID not found");
         }
-        if(departmentRepository.existsByNameAndIdNot(department.getName(),id)){
+        if(departmentRepository.existsByNameAndIdNot(departmentDTO.getName(),id)){
             throw new RuntimeException("Ten này đã tồn tại");
         }
-        departmentUpdate.setName(department.getName());
+        departmentUpdate.setName(departmentDTO.getName());
         departmentRepository.save(departmentUpdate);
-        return departmentUpdate;
     }
 
     @Override
-    public void deleteById(Integer id) {
+    public void delete(Integer id) {
+        if (!departmentRepository.existsById(id)) {
+            throw new RuntimeException("ID not found");
+        }
         departmentRepository.deleteById(id);
     }
 }

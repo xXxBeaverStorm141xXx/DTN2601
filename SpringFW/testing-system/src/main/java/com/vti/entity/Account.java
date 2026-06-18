@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Entity
 @Table(name = "account")
@@ -30,12 +31,18 @@ public class Account {
     @Column(name = "Fullname", nullable = false)
     private String fullName;
 
-    @Column(name = "DepartmentID")
-    private Integer departmentId;
+    @Column
+    private String password;
 
-    @Column(name = "PositionID")
-    private Integer positionId;
+    @ManyToOne
+    @JoinColumn(name = "DepartmentID")
+    private Department department;
 
-    @Column(name = "CreateDate")
-    private LocalDate createDate;
+    @ManyToOne
+    @JoinColumn(name = "PositionID")
+    private Position position;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "CreateDate", insertable = false, updatable = false)
+    private Date createDate;
 }

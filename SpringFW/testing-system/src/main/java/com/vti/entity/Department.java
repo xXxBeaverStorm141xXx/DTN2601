@@ -3,6 +3,8 @@ package com.vti.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "department")
 @Getter
@@ -18,4 +20,8 @@ public class Department {
 
     @Column(name = "DepartmentName", nullable = false, unique = true, length = 50)
     private String name;
+
+//    @OneToMany(mappedBy = "department")
+//    @ToString.Exclude
+//    private List<Account> accounts;
 }
