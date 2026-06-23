@@ -11,11 +11,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DepartmentDTO {
-    private Integer id;
     private String name;
 
     public DepartmentDTO(Department department) {
-        this.id = department.getId();
         this.name = department.getName();
     }
 }

@@ -1,24 +1,25 @@
 package com.vti.service.impl;
 
-import com.vti.config.ModelMapperConfig;
 import com.vti.dto.AccountDTO;
 import com.vti.entity.Account;
 import com.vti.entity.Department;
 import com.vti.entity.Position;
 import com.vti.form.AccountCreateForm;
+import com.vti.form.AccountSearchForm;
 import com.vti.repository.IAccountRepository;
 import com.vti.repository.IDepartmentRepository;
 import com.vti.repository.IPositionRepository;
 import com.vti.service.IAccountService;
-import com.vti.service.IPositionService;
+import com.vti.specification.AccountCustomSpecification;
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.security.auth.login.AccountNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -28,24 +29,57 @@ public class AccountServiceImpl implements IAccountService {
 
     @Autowired
     private ModelMapper modelMapper;
+
     @Autowired
     private IDepartmentRepository departmentRepository;
+
     @Autowired
     private IPositionRepository positionRepository;
 
-    @Override
-    public List<AccountDTO> findAll() {
-        List<Account> accounts = accountRepository.findAll();
-        // chuyen tu list account -> LIST accountDTO
-        List<AccountDTO> dtos = new ArrayList<>();
-        for (Account account : accounts) {
-//            dtos.add(new AccountDTO(account));
+//    @Override
+//    public List<AccountDTO> findAll() {
+//        List<Account> accounts = accountRepository.findAll();
+//        // chuyen tu list account -> LIST accountDTO
+//        List<AccountDTO> dtos = new ArrayList<>();
+//        for (Account account : accounts) {
+////            dtos.add(new AccountDTO(account));
+//
+//            // 1.account: entity muon convert sang DTO
+//            AccountDTO dto = modelMapper.map(account, AccountDTO.class);
+//            dtos.add(dto);
+//        }
+//        return dtos;
+//    }
 
-            // 1.account: entity muon convert sang DTO
-            AccountDTO dto = modelMapper.map(account, AccountDTO.class);
-            dtos.add(dto);
+    @Override
+    public Page<AccountDTO> findAll(Pageable pageable, AccountSearchForm form) {
+        Specification<Account> where = Specification.unrestricted();
+        if(StringUtils.isNotEmpty(form.getUsername())){
+            AccountCustomSpecification username = new AccountCustomSpecification("userName", form.getUsername());
+            where = where.and(username);
         }
-        return dtos;
+        if(StringUtils.isNotEmpty(form.getEmail())){
+            AccountCustomSpecification email = new AccountCustomSpecification("email", form.getEmail());
+            where = where.and(email);
+        }
+        if(StringUtils.isNotEmpty(form.getFullname())){
+            AccountCustomSpecification fullName = new AccountCustomSpecification("fullName", form.getFullname());
+            where = where.and(fullName);
+        }
+        if(StringUtils.isNotEmpty(form.getDepartmentName())){
+            AccountCustomSpecification departmentName = new AccountCustomSpecification("departmentName", form.getDepartmentName());
+            where = where.and(departmentName);
+        }
+        if(StringUtils.isNotEmpty(form.getPositionName())){
+            AccountCustomSpecification positionName = new AccountCustomSpecification("positionName", form.getPositionName());
+            where = where.and(positionName);
+        }
+
+        Page<Account> accountPage = accountRepository.findAll(where, pageable);
+
+
+        Page<AccountDTO> dtoPage = accountPage.map(account -> modelMapper.map(account, AccountDTO.class));
+        return dtoPage;
     }
 
     @Override
@@ -119,19 +153,20 @@ public class AccountServiceImpl implements IAccountService {
         if (accountRepository.existsByUserNameAndIdNot(accountCreateForm.getUsername(),id)){
             throw new RuntimeException("User này đã tồn tại");
         }
-        accountUpdate.setUserName(accountCreateForm.getUsername());
-        accountUpdate.setEmail(accountCreateForm.getEmail());
-        accountUpdate.setFullName(accountCreateForm.getFullname());
+
 
         Department department = departmentRepository.findById(accountCreateForm.getDepartmentId()).orElse(null);
         if(Objects.isNull(department)){
             throw new RuntimeException("Department ID not found");
         }
-        accountUpdate.setDepartment(department);
         Position position = positionRepository.findById(accountCreateForm.getPositionId()).orElse(null);
         if(Objects.isNull(position)){
             throw new RuntimeException("Position ID not found");
         }
+        accountUpdate.setUserName(accountCreateForm.getUsername());
+        accountUpdate.setEmail(accountCreateForm.getEmail());
+        accountUpdate.setFullName(accountCreateForm.getFullname());
+        accountUpdate.setDepartment(department);
         accountUpdate.setPosition(position);
         accountRepository.save(accountUpdate);
 

@@ -1,6 +1,5 @@
-package com.vti.dto;
+package com.vti.form;
 
-import com.vti.enums.PositionName;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PositionDTO {
+public class PositionSearchForm {
     private String name;
 }

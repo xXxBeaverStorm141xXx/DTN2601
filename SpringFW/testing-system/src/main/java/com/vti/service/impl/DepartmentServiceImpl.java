@@ -2,10 +2,16 @@ package com.vti.service.impl;
 
 import com.vti.dto.DepartmentDTO;
 import com.vti.entity.Department;
+import com.vti.form.DepartmentSearchForm;
 import com.vti.repository.IDepartmentRepository;
 import com.vti.service.IDepartmentService;
+import com.vti.specification.DepartmentCustomSpecification;
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,13 +27,22 @@ public class DepartmentServiceImpl implements IDepartmentService {
     private ModelMapper modelMapper;
 
     @Override
-    public List<DepartmentDTO> findAll() {
-        List<Department> departments = departmentRepository.findAll();
-        List<DepartmentDTO> departmentDTOS = new ArrayList<>();
-        for (Department department : departments) {
-            departmentDTOS.add(new DepartmentDTO(department));
+    public Page<DepartmentDTO> findAll(Pageable pageable, DepartmentSearchForm form) {
+//        List<Department> departments = departmentRepository.findAll();
+//        List<DepartmentDTO> departmentDTOS = new ArrayList<>();
+//        for (Department department : departments) {
+//            departmentDTOS.add(new DepartmentDTO(department));
+//        }
+//        return departmentDTOS;
+        Specification<Department> where = Specification.unrestricted();
+        if(StringUtils.isNotEmpty(form.getName())){
+            DepartmentCustomSpecification name = new DepartmentCustomSpecification("name", form.getName());
+            where = where.and(name);
         }
-        return departmentDTOS;
+
+        Page<Department> departmentPage = departmentRepository.findAll(where, pageable);
+        Page<DepartmentDTO> dtoPage = departmentPage.map(department ->  modelMapper.map(department, DepartmentDTO.class));
+        return dtoPage;
     }
 
     @Override
